@@ -18,16 +18,33 @@ public class Main {
           + "6. Quit\n"
           + "Choose an option (1-6): ";
 
-  /** The account the user operates on. */
-  private final SavingsAccount account;
+  /**
+   * The account the user operates on.
+   *
+   * <p>It is declared as a {@link BankAccount} reference even though the object created is a
+   * {@link SavingsAccount}. This is <em>upcasting</em>: assigning a subclass object to a
+   * superclass reference. The reference type only exposes what {@link BankAccount} declares,
+   * while the object behind it keeps its {@link SavingsAccount} behaviour.
+   */
+  private final BankAccount account;
+
+  /** The name of the account owner. */
+  private final String ownerName;
 
   /**
-   * Creates the account with the owner name typed by the user.
+   * Creates the app around an account.
+   *
+   * <p>The account is received as a {@link BankAccount} reference even though the object passed
+   * in is a {@link SavingsAccount}. This is <em>upcasting</em>: assigning a subclass object to a
+   * superclass reference. The reference type only exposes what {@link BankAccount} declares,
+   * while the object behind it keeps its {@link SavingsAccount} behaviour.
    *
    * @param ownerName the name of the account owner
+   * @param account the account the user operates on, held as a superclass reference
    */
-  public Main(String ownerName) {
-    this.account = new SavingsAccount(ownerName);
+  public Main(String ownerName, BankAccount account) {
+    this.ownerName = ownerName;
+    this.account = account;
   }
 
   public static void main(String[] args) {
@@ -39,8 +56,12 @@ public class Main {
       name = in.nextLine().trim();
     }
 
-    Main app = new Main(name);
+    // Upcasting: the SavingsAccount object is assigned to a BankAccount reference.
+    BankAccount account = new SavingsAccount(name);
+    Main app = new Main(name, account);
     System.out.println("Account Owner: " + name + ".");
+    System.out.println("Upcasting demo: created a " + account.getClass().getSimpleName()
+        + " stored in a " + BankAccount.class.getSimpleName() + " reference.");
     app.run(in);
   }
 
@@ -128,7 +149,7 @@ public class Main {
 
   /** Prints the current balance and frozen status. */
   private void showStatus() {
-    System.out.printf("Owner: %s%n", account.getOwnerName());
+    System.out.printf("Owner: %s%n", ownerName);
     System.out.printf("Balance: %.2f%n", account.getBalance());
     System.out.println("Status: " + (account.isFrozen() ? "FROZEN" : "ACTIVE"));
   }
